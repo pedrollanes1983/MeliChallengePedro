@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">MeliSearchSampleApp</string>
+    <string name="loading">Buscando productos...</string>
+    <string name="title_item_detail">Detalles del Producto</string>
+    <string name="search_product">Buscar artículo</string>
+    <string name="search_hint">Introduzca el texto para buscar</string>
+    <string name="empty_search">No existen productos para el criterio de búsqueda actual o no se ha ejecutado una búsqueda.</string>
+    <string name="empty_search_result">No se encontraron productos para el criterio indicado. Intente con otra palabra clave.</string>
+    <string name="info_text">Información</string>
+    <string name="alert_text">Alerta</string>
+    <string name="error_text">Error</string>
+    <string name="accept">OK</string>
+    <string name="error_search">Ocurrió un error realizando la búsqueda, inténtelo de nuevo.</string>
+    <string name="price_lbl">Precio:</string>
+    <string name="cantidad_disponible">Cantidad disponible:</string>
+</resources>
