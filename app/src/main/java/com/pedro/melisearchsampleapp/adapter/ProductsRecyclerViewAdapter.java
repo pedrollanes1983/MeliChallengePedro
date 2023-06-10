@@ -25,6 +25,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Adaptador del RecyclerView para mostrar el listado de productos encontrados en al búsqueda
+ */
 public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRecyclerViewAdapter.ViewHolder> {
     private static final Logger logger = LoggerFactory.getLogger(ProductsRecyclerViewAdapter.class);
     private final List<Product> mValues;
@@ -64,6 +67,7 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
             Product item =
                     (Product) itemView.getTag();
             Bundle arguments = new Bundle();
+            // Se utiliza un argumento para conocer el id del producto que se va a mostrar en la pantalla de detalles
             arguments.putString(ProductDetailFragment.ARG_ITEM_ID, item.getId());
             if (mItemDetailFragmentContainer != null) {
                 Navigation.findNavController(mItemDetailFragmentContainer)

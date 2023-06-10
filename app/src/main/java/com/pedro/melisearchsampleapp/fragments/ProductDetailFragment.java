@@ -3,7 +3,6 @@ package com.pedro.melisearchsampleapp.fragments;
 import android.os.Bundle;
 
 import android.widget.ImageView;
-import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.pedro.melisearchsampleapp.MeliSearchSampleApplication;
 import com.pedro.melisearchsampleapp.R;
-import com.pedro.melisearchsampleapp.model.SearchResultsViewModel;
+import com.pedro.melisearchsampleapp.viewmodels.SearchResultsViewModel;
 import com.pedro.melisearchsampleapp.model.Product;
 import com.pedro.melisearchsampleapp.databinding.FragmentProductDetailBinding;
 import com.squareup.picasso.Picasso;
@@ -19,14 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.Locale;
 
 /**
  * Fragmento utilizado para mostrar los detalles de un producto
  */
-public class ProductDetailFragment extends Fragment {
+public class ProductDetailFragment extends BaseFragment {
     private static final Logger logger = LoggerFactory.getLogger(ProductListFragment.class);
 
     /**
@@ -42,6 +38,9 @@ public class ProductDetailFragment extends Fragment {
     private TextView mPriceView;
     private TextView mCurrencyView;
     private TextView mAvailableCount;
+    private TextView mCondition;
+    private TextView mStopTime;
+    private TextView mSoldCount;
 
     @Inject
     SearchResultsViewModel viewModel;
@@ -75,12 +74,19 @@ public class ProductDetailFragment extends Fragment {
         mCurrencyView = binding.currency;
         mPriceView = binding.price;
         mAvailableCount = binding.availableCount;
+        mSoldCount = binding.soldCount;
+        mStopTime = binding.stopTime;
+        mCondition = binding.condition;
 
+        // Se obtiene el producto actual del listado, buscando por el ID que se pasa en los argumentos
         product = viewModel.getById(getArguments().get(ProductDetailFragment.ARG_ITEM_ID).toString());
 
-        getActivity().setTitle(product.getTitle());
+        if (product == null) {
+            showErrorDialog(getString(R.string.null_product_error), getActivity());
+            return rootView;
+        }
 
-        // Show the placeholder content as text in a TextView & in the toolbar if available.
+        // Actualizar los datos del producto
         updateContent();
         return rootView;
     }
@@ -92,12 +98,18 @@ public class ProductDetailFragment extends Fragment {
         logger.info("Fragment view destroyed");
     }
 
+    /**
+     * Permite actualizar el contenido de los detalles del producto actual
+     */
     private void updateContent() {
         if (product != null) {
             this.mTitleView.setText(product.getTitle());
             this.mPriceView.setText(product.getPriceFormatted());
             this.mCurrencyView.setText(String.format("(%s)", product.getCurrencyId()));
             this.mAvailableCount.setText(product.getAvailableQuantity().toString());
+            this.mSoldCount.setText(product.getSoldQuantity().toString());
+            this.mCondition.setText(product.getCondition());
+            this.mStopTime.setText(product.getStopTime());
             Picasso.with(getActivity()).load(product.getThumbnail())
                     .error(R.drawable.image_placeholder)
                     .placeholder(R.drawable.image_placeholder)

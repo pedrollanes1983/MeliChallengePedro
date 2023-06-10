@@ -1,8 +1,10 @@
-package com.pedro.melisearchsampleapp.model;
+package com.pedro.melisearchsampleapp.viewmodels;
 
 import androidx.lifecycle.ViewModel;
 import com.pedro.melisearchsampleapp.api.MeliSearchApi;
-import com.pedro.melisearchsampleapp.api.SearchCallback;
+import com.pedro.melisearchsampleapp.api.ApiCallback;
+import com.pedro.melisearchsampleapp.model.Product;
+import com.pedro.melisearchsampleapp.model.ProductSearchResultList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,7 +37,7 @@ public class SearchResultsViewModel extends ViewModel {
         return searchValue;
     }
 
-    public void searchProducts(String value, SearchCallback searchCallback) {
+    public void searchProducts(String value, ApiCallback searchCallback) {
         searchValue = value;
         MeliSearchApi service = retrofit.create(MeliSearchApi.class);
         Call<ProductSearchResultList> call = service.searchItems(searchValue);

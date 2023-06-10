@@ -21,6 +21,11 @@ public class Product {
     private String currencyId;
     @SerializedName("available_quantity")
     private Integer availableQuantity;
+    @SerializedName("stop_time")
+    private String stopTime;
+    @SerializedName("sold_quantity")
+    private Integer soldQuantity;
+
 
     public String getId() {
         return id;
@@ -94,5 +99,21 @@ public class Product {
         numberFormat.setMinimumFractionDigits(2);
         BigDecimal priceDec = price.setScale(2, BigDecimal.ROUND_DOWN);
         return numberFormat.format(priceDec);
+    }
+
+    public String getStopTime() {
+        return stopTime;
+    }
+
+    public void setStopTime(String stopTime) {
+        this.stopTime = stopTime;
+    }
+
+    public Integer getSoldQuantity() {
+        return soldQuantity;
+    }
+
+    public void setSoldQuantity(Integer soldQuantity) {
+        this.soldQuantity = soldQuantity;
     }
 }

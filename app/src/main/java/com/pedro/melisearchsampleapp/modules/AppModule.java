@@ -3,8 +3,7 @@ package com.pedro.melisearchsampleapp.modules;
 import com.pedro.melisearchsampleapp.SearchProductsActivity;
 import com.pedro.melisearchsampleapp.fragments.ProductDetailFragment;
 import com.pedro.melisearchsampleapp.fragments.ProductListFragment;
-import com.pedro.melisearchsampleapp.model.SearchResultsViewModel;
-import dagger.Component;
+import com.pedro.melisearchsampleapp.viewmodels.SearchResultsViewModel;
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
 

@@ -11,6 +11,11 @@
     <string name="error_text">Error</string>
     <string name="accept">OK</string>
     <string name="error_search">Ocurrió un error realizando la búsqueda, inténtelo de nuevo.</string>
+    <string name="error_search_net">No fue posible realizar la búsqueda. Verifique que tiene conexión a internet.</string>
     <string name="price_lbl">Precio:</string>
     <string name="cantidad_disponible">Cantidad disponible:</string>
+    <string name="null_product_error">No se ha encontrado el producto para mostrar los detalles.</string>
+    <string name="condition">Condición:</string>
+    <string name="stop_time">Termina en:</string>
+    <string name="sold_count">Cantidad vendida:</string>
 </resources>
