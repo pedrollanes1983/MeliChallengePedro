@@ -31,15 +31,12 @@ import java.util.List;
 public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRecyclerViewAdapter.ViewHolder> {
     private static final Logger logger = LoggerFactory.getLogger(ProductsRecyclerViewAdapter.class);
     private final List<Product> mValues;
-    private final View mItemDetailFragmentContainer;
 
     private final Context mContext;
 
     public ProductsRecyclerViewAdapter(List<Product> items,
-                                       View itemDetailFragmentContainer,
                                        Context context) {
         mValues = items;
-        mItemDetailFragmentContainer = itemDetailFragmentContainer;
         mContext = context;
     }
 
@@ -69,12 +66,7 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
             Bundle arguments = new Bundle();
             // Se utiliza un argumento para conocer el id del producto que se va a mostrar en la pantalla de detalles
             arguments.putString(ProductDetailFragment.ARG_ITEM_ID, item.getId());
-            if (mItemDetailFragmentContainer != null) {
-                Navigation.findNavController(mItemDetailFragmentContainer)
-                        .navigate(R.id.fragment_product_detail, arguments);
-            } else {
-                Navigation.findNavController(itemView).navigate(R.id.show_item_detail, arguments);
-            }
+            Navigation.findNavController(itemView).navigate(R.id.show_item_detail, arguments);
         });
     }
 

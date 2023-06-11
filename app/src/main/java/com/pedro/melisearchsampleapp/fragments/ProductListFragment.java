@@ -87,17 +87,15 @@ public class ProductListFragment extends BaseFragment {
         dividerItemDecoration.setDrawable(new ColorDrawable(getResources().getColor(R.color.yellow_light)));
         mRecyclerView.addItemDecoration(dividerItemDecoration);
 
-        final View itemDetailFragmentContainer = view.findViewById(R.id.item_detail_nav_container);
-
         // Se intenta cargar la búsqueda anterior (en caso de que haya alguna). De esta forma no se pierde
         // el estado de la vista cuando el fragmento es recreado (por ejemplo al rotar el dispositivo)
-        loadPreviousSearchValues(itemDetailFragmentContainer);
+        loadPreviousSearchValues();
 
         // Evento para lanzar la búsqueda
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                executeSearch(query, itemDetailFragmentContainer);
+                executeSearch(query);
                 return false;
             }
 
@@ -112,11 +110,10 @@ public class ProductListFragment extends BaseFragment {
     /**
      * Intenta (si es posible) cargar la búsqueda anterior (en caso de que haya alguna). De esta forma no se pierde
      * el estado de la vista cuando el fragmento es recreado (por ejemplo al rotar el dispositivo)
-     * @param itemDetailFragmentContainer
      */
-    private void loadPreviousSearchValues(View itemDetailFragmentContainer) {
+    private void loadPreviousSearchValues() {
         if (mViewModel != null && mViewModel.getSearchResultList() != null && mViewModel.getSearchResultList().hasResults()) {
-            setupRecyclerView(mRecyclerView, itemDetailFragmentContainer, mViewModel.getSearchResultList(), mEmptyView);
+            setupRecyclerView(mRecyclerView, mViewModel.getSearchResultList(), mEmptyView);
             mSearchView.setQuery(mViewModel.getSearchValue(), false);
         } else {
             mEmptyView.setVisibility(View.VISIBLE);
@@ -127,9 +124,8 @@ public class ProductListFragment extends BaseFragment {
     /**
      * Ejecuta una búsqueda dada una palabra clave
      * @param value Texto por el que se va a buscar
-     * @param itemDetailFragmentContainer
      */
-    private void executeSearch(String value, View itemDetailFragmentContainer) {
+    private void executeSearch(String value) {
         logger.info("Executing search by " + value);
 
         mProgressDoalog = new ProgressDialog(ProductListFragment.this.getActivity());
@@ -139,7 +135,7 @@ public class ProductListFragment extends BaseFragment {
             @Override
             public void onResponse() {
                 mProgressDoalog.dismiss();
-                setupRecyclerView(mRecyclerView, itemDetailFragmentContainer, mViewModel.getSearchResultList(), mEmptyView);
+                setupRecyclerView(mRecyclerView, mViewModel.getSearchResultList(), mEmptyView);
             }
 
             @Override
@@ -161,13 +157,11 @@ public class ProductListFragment extends BaseFragment {
     /**
      * Permite configurar el RecyclerVIew con los productos encontrados
      * @param recyclerView Recyvler a configurar
-     * @param itemDetailFragmentContainer
      * @param resultList Listado de productos a mostrar
      * @param emptyView Vista que se muestra en caso de qu no haya productos a mostrar
      */
     private void setupRecyclerView(
             RecyclerView recyclerView,
-            View itemDetailFragmentContainer,
             ProductSearchResultList resultList,
             TextView emptyView
     ) {
@@ -177,7 +171,6 @@ public class ProductListFragment extends BaseFragment {
             emptyView.setVisibility(View.GONE);
             recyclerView.setAdapter(new ProductsRecyclerViewAdapter(
                     resultList.getResults(),
-                    itemDetailFragmentContainer,
                     getActivity()
             ));
         } else {
