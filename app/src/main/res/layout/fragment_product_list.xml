@@ -16,6 +16,7 @@
             android:layout_height="48dp"
             app:queryHint="@string/search_hint"
             android:focusable="true"
+            android:layout_marginBottom="10dp"
             app:iconifiedByDefault="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -26,12 +27,14 @@
             android:name="com.pedro.melisearchsampleapp.ItemListFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginLeft="@dimen/text_margin_small"
+            android:layout_marginRight="@dimen/text_margin_small"
             app:layout_constraintTop_toBottomOf="@+id/item_search"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layoutManager="LinearLayoutManager"
-            tools:context="com.pedro.melisearchsampleapp.com.pedro.melisearchsampleapp.ItemDetailHostActivity"
-            tools:listitem="@layout/product_list_content"/>
+            tools:context="com.pedro.melisearchsampleapp.activity.SearchProductsActivity"
+            tools:listitem="@layout/product_list_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <TextView
             android:id="@+id/empty_view"

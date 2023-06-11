@@ -4,12 +4,13 @@ plugins {
 
 android {
     namespace 'com.pedro.melisearchsampleapp'
-    compileSdk 32
+    compileSdk 31
 
     defaultConfig {
         applicationId "com.pedro.melisearchsampleapp"
-        minSdk 24
-        targetSdk 32
+        minSdk 30
+
+        targetSdk 31
         versionCode 1
         versionName "1.0"
 

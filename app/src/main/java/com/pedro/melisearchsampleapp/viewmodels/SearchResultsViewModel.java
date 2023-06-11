@@ -1,6 +1,7 @@
 package com.pedro.melisearchsampleapp.viewmodels;
 
 import androidx.lifecycle.ViewModel;
+import com.pedro.melisearchsampleapp.MeliSearchSampleApplication;
 import com.pedro.melisearchsampleapp.api.MeliSearchApi;
 import com.pedro.melisearchsampleapp.api.ApiCallback;
 import com.pedro.melisearchsampleapp.model.Product;
@@ -13,13 +14,19 @@ import retrofit2.Retrofit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
+/**
+ * View model que contiene la lista de productos de la búsqueda. Además se encarga de gestionar las
+ * búsquedas consultando al servidor a través de los métodos de la API.
+ * Este ViewModel lo comparten los dos fragmentos de la app, de esta forma se mantiene el estado de las
+ * pantallas cuando hay cambios de configuració, como en la rotación de pantalla
+ */
 public class SearchResultsViewModel extends ViewModel {
     @Inject
     Retrofit retrofit;
 
     @Inject
     public SearchResultsViewModel() {
+        MeliSearchSampleApplication.getApplication().androidInjector().inject(this);
     }
 
     private String searchValue;
@@ -30,7 +37,10 @@ public class SearchResultsViewModel extends ViewModel {
     }
 
     public Product getById(String id) {
-        return searchResultList.getById(id);
+        if (searchResultList != null)
+            return searchResultList.getById(id);
+        else
+            return null;
     }
 
     public String getSearchValue() {

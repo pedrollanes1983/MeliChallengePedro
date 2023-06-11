@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import androidx.lifecycle.ViewModelProvider;
 import com.pedro.melisearchsampleapp.MeliSearchSampleApplication;
 import com.pedro.melisearchsampleapp.R;
 import com.pedro.melisearchsampleapp.viewmodels.SearchResultsViewModel;
@@ -16,8 +17,6 @@ import com.pedro.melisearchsampleapp.databinding.FragmentProductDetailBinding;
 import com.squareup.picasso.Picasso;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
 
 /**
  * Fragmento utilizado para mostrar los detalles de un producto
@@ -42,8 +41,7 @@ public class ProductDetailFragment extends BaseFragment {
     private TextView mStopTime;
     private TextView mSoldCount;
 
-    @Inject
-    SearchResultsViewModel viewModel;
+    SearchResultsViewModel mViewModel;
 
     private FragmentProductDetailBinding binding;
 
@@ -64,6 +62,8 @@ public class ProductDetailFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         MeliSearchSampleApplication.getApplication().androidInjector().inject(this);
 
+        mViewModel = new ViewModelProvider(getActivity()).get(SearchResultsViewModel.class);
+
         logger.info("Fragment view created");
 
         binding = FragmentProductDetailBinding.inflate(inflater, container, false);
@@ -79,7 +79,7 @@ public class ProductDetailFragment extends BaseFragment {
         mCondition = binding.condition;
 
         // Se obtiene el producto actual del listado, buscando por el ID que se pasa en los argumentos
-        product = viewModel.getById(getArguments().get(ProductDetailFragment.ARG_ITEM_ID).toString());
+        product = mViewModel.getById(getArguments().get(ProductDetailFragment.ARG_ITEM_ID).toString());
 
         if (product == null) {
             showErrorDialog(getString(R.string.null_product_error), getActivity());

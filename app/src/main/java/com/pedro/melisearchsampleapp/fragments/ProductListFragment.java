@@ -1,10 +1,13 @@
 package com.pedro.melisearchsampleapp.fragments;
 
 import android.app.ProgressDialog;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import android.widget.TextView;
 import androidx.appcompat.widget.SearchView;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -56,12 +59,14 @@ public class ProductListFragment extends BaseFragment {
     /**
      * ViewModel asociado al fragmento. Administra el listado de productos recuperado del servidor
      */
-    @Inject
     SearchResultsViewModel mViewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         MeliSearchSampleApplication.getApplication().androidInjector().inject(this);
+
+        // Se obtiene el view model del Activiy
+        mViewModel = new ViewModelProvider(getActivity()).get(SearchResultsViewModel.class);
 
         logger.info("Fragment view created");
 
@@ -76,6 +81,11 @@ public class ProductListFragment extends BaseFragment {
         mRecyclerView = mBinding.itemList;
         mSearchView = mBinding.itemSearch;
         mEmptyView = mBinding.emptyView;
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        dividerItemDecoration.setDrawable(new ColorDrawable(getResources().getColor(R.color.yellow_light)));
+        mRecyclerView.addItemDecoration(dividerItemDecoration);
 
         final View itemDetailFragmentContainer = view.findViewById(R.id.item_detail_nav_container);
 
