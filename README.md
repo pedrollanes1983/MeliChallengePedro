@@ -2,6 +2,10 @@
 Meli Challenge implementation by Pedro Llanes
 
 Notas y consideraciones:
+- En el challenge indicaban que la app debería contar con 3 pantallas: búsqueda, listado de productos y detalles 
+de producto. Yo sólo utilicé dos fragmentos, ya que el componente de buscar y el listado de productos los ubiqué
+en el mismo fragmento.
+
 - En el listado de productos, a la hora de hacer el fetch, se debería implementar un paginado. 
 Para esto se podría haber realizado una implementación de Scroll Infinito en el RecyvlerView 
 que lista los productos. Por cuestiones de tiempo no pude implementarlo.
