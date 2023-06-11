@@ -1,9 +1,6 @@
 package com.pedro.melisearchsampleapp;
 
-import android.app.AlertDialog;
 import android.app.Application;
-import android.view.ContextThemeWrapper;
-import com.pedro.melisearchsampleapp.fragments.ProductListFragment;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
@@ -12,12 +9,22 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
+/**
+ * Clase custom para sobreescribir el Application de Android
+ */
 public class MeliSearchSampleApplication extends Application implements HasAndroidInjector {
     private static final Logger logger = LoggerFactory.getLogger(MeliSearchSampleApplication.class);
     @Inject DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
 
+    /**
+     * Instancia static de la aplicación para utilizarla en otras clases
+     */
     private static MeliSearchSampleApplication instance;
 
+    /**
+     * Retorna la instancia global de la app
+     * @return
+     */
     public static MeliSearchSampleApplication getApplication() {
         return instance;
     }
@@ -26,20 +33,15 @@ public class MeliSearchSampleApplication extends Application implements HasAndro
     public void onCreate() {
         super.onCreate();
         DaggerAppComponent.create().inject(this);
-        instance = this;
+        instance = MeliSearchSampleApplication.this;
 
-        /**
-         * Procesamiento global de excepciones en la app. Quedará registro en el log del error inesperado.
-         * Se podría implementar mecanismo de reportar error, por ejemplo con Crashlytics de Firebase
-         */
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread paramThread, Throwable paramThrowable) {
-                //Catch your exception
-                logger.error("Error inesperado en la app", paramThrowable);
-                // Without System.exit() this will not work.
-                System.exit(2);
-            }
+        // Procesamiento global de excepciones en la app. Quedará registro en el log del error inesperado.
+        // Se podría implementar mecanismo de reportar error, por ejemplo con Crashlytics de Firebase
+        Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
+            //Catch your exception
+            logger.error("Error inesperado en la app", paramThrowable);
+            // Without System.exit() this will not work.
+            System.exit(2);
         });
     }
 

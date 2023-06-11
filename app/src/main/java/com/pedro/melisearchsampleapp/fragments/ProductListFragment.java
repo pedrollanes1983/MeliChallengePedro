@@ -3,24 +3,23 @@ package com.pedro.melisearchsampleapp.fragments;
 import android.app.ProgressDialog;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-
-import android.widget.TextView;
-import androidx.appcompat.widget.SearchView;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import androidx.appcompat.widget.SearchView;
+import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
 import com.pedro.melisearchsampleapp.MeliSearchSampleApplication;
 import com.pedro.melisearchsampleapp.R;
 import com.pedro.melisearchsampleapp.adapter.ProductsRecyclerViewAdapter;
 import com.pedro.melisearchsampleapp.api.ApiCallback;
 import com.pedro.melisearchsampleapp.databinding.FragmentProductListBinding;
-
-import com.pedro.melisearchsampleapp.viewmodels.SearchResultsViewModel;
 import com.pedro.melisearchsampleapp.model.ProductSearchResultList;
+import com.pedro.melisearchsampleapp.viewmodels.SearchResultsViewModel;
+import com.pedro.melisearchsampleapp.viewmodels.ViewModelProviderFactory;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +27,8 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 /**
- * Fragmento del Buscador. Permite introducir la clave de búsqueda e
- * invocar al end-point que recupera los productos del servidor
+ * Fragmento del Buscador. Permite introducir la clave de búsqueda e invocar al
+ * end-point a través del ViewModel para obtener el listado de productos
  */
 public class ProductListFragment extends BaseFragment {
     private static final Logger logger = LoggerFactory.getLogger(ProductListFragment.class);
@@ -37,7 +36,7 @@ public class ProductListFragment extends BaseFragment {
     /**
      * Diálogo de progreso que se muestra durante las operaciones asincrónicas
      */
-    ProgressDialog mProgressDoalog;
+    ProgressDialog mProgressDialog;
 
     /**
      * Componente de búsqueda
@@ -50,6 +49,11 @@ public class ProductListFragment extends BaseFragment {
     private RecyclerView mRecyclerView;
 
     /**
+     * Adapter asociado al RecyclerView que muestra la lista de productos encontrados
+     */
+    ProductsRecyclerViewAdapter mProductsRecyclerViewAdapter;
+
+    /**
      * TextView que indica que no hay elementos para mostrar
      */
     private TextView mEmptyView;
@@ -57,16 +61,20 @@ public class ProductListFragment extends BaseFragment {
     private FragmentProductListBinding mBinding;
 
     /**
-     * ViewModel asociado al fragmento. Administra el listado de productos recuperado del servidor
+     * ViewModel asociado a la actividad principal y que comparten los fragmentos de la app.
+     * Contiene el listado de productos recuperado del servidor y la clave de búsqueda.
      */
-    SearchResultsViewModel mViewModel;
+    private SearchResultsViewModel mViewModel;
+
+    @Inject
+    ViewModelProviderFactory viewModelProviderFactory;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         MeliSearchSampleApplication.getApplication().androidInjector().inject(this);
 
-        // Se obtiene el view model del Activiy
-        mViewModel = new ViewModelProvider(getActivity()).get(SearchResultsViewModel.class);
+        // Se obtiene el ViewModel de la Activity
+        mViewModel = viewModelProviderFactory.provideSearchResultsViewModel(getActivity());
 
         logger.info("Fragment view created");
 
@@ -75,74 +83,148 @@ public class ProductListFragment extends BaseFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NotNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         mRecyclerView = mBinding.itemList;
         mSearchView = mBinding.itemSearch;
         mEmptyView = mBinding.emptyView;
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
-                DividerItemDecoration.VERTICAL);
-        dividerItemDecoration.setDrawable(new ColorDrawable(getResources().getColor(R.color.yellow_light)));
-        mRecyclerView.addItemDecoration(dividerItemDecoration);
+        // Configura el RecyclerView (aspectos visuales como separadores, se configura el adapter, etc.)
+        setupRecyclerView();
 
-        // Se intenta cargar la búsqueda anterior (en caso de que haya alguna). De esta forma no se pierde
-        // el estado de la vista cuando el fragmento es recreado (por ejemplo al rotar el dispositivo)
-        loadPreviousSearchValues();
+        // Configura el observer que mantiene sincronizada la lista de productos con el ViewModel (usando LiveData)
+        configureViewModelObserver();
 
-        // Evento para lanzar la búsqueda
+        // Se hace un análisis inicial para saber si hay productos a mostrar, o se debe mostrar el placeholder
+        checkSearchResultIsEmpty();
+
+        // Configura el evento del SearchView para invocar al método de ejecutar una búsqueda del ViewModel
+        setUpSearchEngine();
+    }
+
+    /**
+     * Configura el mecanismo de disparo de la búsqueda en el SearchView
+     */
+    private void setUpSearchEngine() {
+        // Se configura el evento correspondiente del SearchView para lanzar una búsqueda
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                // Se ejecuta la búsqueda
                 executeSearch(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // No se busca en el text change por tema de performance, solamente con la acción de buscar se lanza la búsqueda
+                // No se lanza la búsqueda en el evento text change del SearchView por tema de performance,
+                // pues se estaría encuestando al servidor cada vez que se cambia el texto
                 return false;
             }
         });
     }
 
     /**
-     * Intenta (si es posible) cargar la búsqueda anterior (en caso de que haya alguna). De esta forma no se pierde
-     * el estado de la vista cuando el fragmento es recreado (por ejemplo al rotar el dispositivo)
+     * Permite configurar el observer que va a mantener sincronizada la lista de productos con el ViewModel
      */
-    private void loadPreviousSearchValues() {
-        if (mViewModel != null && mViewModel.getSearchResultList() != null && mViewModel.getSearchResultList().hasResults()) {
-            setupRecyclerView(mRecyclerView, mViewModel.getSearchResultList(), mEmptyView);
-            mSearchView.setQuery(mViewModel.getSearchValue(), false);
-        } else {
+    private void configureViewModelObserver() {
+        // Se utiliza LiveData para mantener sincronizada la lista de resultados de búsqueda con el RecyclerView
+        // aunque como no se está usando paginado, se podría asignar directamente la lista al adapter cuando se
+        // realiza la consulta, ya que la lista no va a cambiar si no es con otra consulta
+        Observer<ProductSearchResultList> productSearchResulListObserver = resultList -> {
+            if (resultList != null && resultList.hasResults()) {
+                // Hay productos para mostrar, muestro el RecyclerView y oculto el placeholder
+                mRecyclerView.setVisibility(View.VISIBLE);
+                mEmptyView.setVisibility(View.GONE);
+            } else {
+                // No hay productos para mostrar, muestro el placeholder y oculto el RecyclerView
+                mRecyclerView.setVisibility(View.GONE);
+                mEmptyView.setVisibility(View.VISIBLE);
+            }
+            // Actualizo el listado de elementos en el adapter
+            if (resultList != null) {
+                mProductsRecyclerViewAdapter.updateProductsList(resultList.getResults());
+            }
+        };
+        // Configuro el Observer para ser notificado cuando cambia el listado de productos en el ViewModel
+        mViewModel.getSearchResultList().observe(getViewLifecycleOwner(), productSearchResulListObserver);
+    }
+
+    /**
+     * Método para configurar el RecyvlerView
+     */
+    private void setupRecyclerView() {
+        // Configurar separadores del RecyclerView
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        try {
+            dividerItemDecoration.setDrawable(new ColorDrawable(getResources().getColor(R.color.yellow_light, requireActivity().getTheme())));
+        } catch (IllegalStateException ex) {
+            logger.error("El fragmento no está asociado a una actividad.");
+        }
+        mRecyclerView.addItemDecoration(dividerItemDecoration);
+
+        // Se oculta inicialmente la vista que se muestra si el listado de productos está vacío
+        mEmptyView.setVisibility(View.GONE);
+        // Se crea el adapter para el RecyclerView
+        mProductsRecyclerViewAdapter = new ProductsRecyclerViewAdapter(getActivity());
+        mRecyclerView.setAdapter(mProductsRecyclerViewAdapter);
+    }
+
+    /**
+     * Comprueba si existen productos para mostrar, y en correspondencia muestra el placeholder de la lista
+     */
+    private void checkSearchResultIsEmpty() {
+        if (mViewModel.getSearchResultList().getValue() == null || !mViewModel.getSearchResultList().getValue().hasResults()) {
             mEmptyView.setVisibility(View.VISIBLE);
             mSearchView.setIconified(false);
+        } else {
+            mEmptyView.setVisibility(View.GONE);
+            mSearchView.setIconified(true);
         }
     }
 
     /**
-     * Ejecuta una búsqueda dada una palabra clave
+     * Ejecuta una búsqueda dada una palabra clave. Consulta al end-point correspondiente
+     * a través del ViewModel. Muestra un diálogo de progreso mientras dura la consulta
+     * y da feedback al usuario en caso de que no se encuentren productos o se produzca
+     * algún error (como problemas de conexión por ejemplo)
      * @param value Texto por el que se va a buscar
      */
     private void executeSearch(String value) {
         logger.info("Executing search by " + value);
 
-        mProgressDoalog = new ProgressDialog(ProductListFragment.this.getActivity());
-        mProgressDoalog.setMessage(getString(R.string.loading));
-        mProgressDoalog.show();
+        // Mostrar diálogo de progreso
+        mProgressDialog = new ProgressDialog(ProductListFragment.this.getActivity());
+        mProgressDialog.setMessage(getString(R.string.loading));
+        mProgressDialog.show();
+        // Invicar al método de buscar productos del ViewModel
         mViewModel.searchProducts(value, new ApiCallback() {
+            /**
+             * La llamada al servicio fue exitosa (no es necesario recibir el response, ya que la lista
+             * será actualizada con el LiveData del ViewModel)
+             */
             @Override
             public void onResponse() {
-                mProgressDoalog.dismiss();
-                setupRecyclerView(mRecyclerView, mViewModel.getSearchResultList(), mEmptyView);
+                mProgressDialog.dismiss();
+                // Si no hay elementos para buscar debe ser que no se encontraron productos para la palabra de
+                // búsqueda, por tanto notifico al usuario
+                if (mProductsRecyclerViewAdapter.getItemCount() == 0) {
+                    showAlertDialog(getString(R.string.empty_search_result), getActivity());
+                }
             }
 
+            /**
+             * Se produjo un error al consultar al servicio
+             * @param t Error que se produjo
+             */
             @Override
             public void onFailure(Throwable t) {
                 t.printStackTrace();
                 logger.error("Error en la búsqueda " + t.getMessage());
-                mProgressDoalog.dismiss();
+                mProgressDialog.dismiss();
+                // Se notifica al usuario acerca del error ocurrido
                 if (t instanceof IOException) {
                     // Reportar error de conexión
                     showErrorDialog(getString(R.string.error_search_net), getActivity());
@@ -152,32 +234,6 @@ public class ProductListFragment extends BaseFragment {
                 }
             }
         });
-    }
-
-    /**
-     * Permite configurar el RecyclerVIew con los productos encontrados
-     * @param recyclerView Recyvler a configurar
-     * @param resultList Listado de productos a mostrar
-     * @param emptyView Vista que se muestra en caso de qu no haya productos a mostrar
-     */
-    private void setupRecyclerView(
-            RecyclerView recyclerView,
-            ProductSearchResultList resultList,
-            TextView emptyView
-    ) {
-
-        if (resultList != null && resultList.hasResults()) {
-            recyclerView.setVisibility(View.VISIBLE);
-            emptyView.setVisibility(View.GONE);
-            recyclerView.setAdapter(new ProductsRecyclerViewAdapter(
-                    resultList.getResults(),
-                    getActivity()
-            ));
-        } else {
-            showAlertDialog(getString(R.string.empty_search_result), getActivity());
-            recyclerView.setVisibility(View.GONE);
-            emptyView.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override

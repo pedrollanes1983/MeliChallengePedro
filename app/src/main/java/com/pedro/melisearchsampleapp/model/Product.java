@@ -3,7 +3,7 @@ package com.pedro.melisearchsampleapp.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
+import java.math.RoundingMode;
 import java.text.NumberFormat;
 
 public class Product {
@@ -26,6 +26,8 @@ public class Product {
     @SerializedName("sold_quantity")
     private Integer soldQuantity;
 
+    @SerializedName("title")
+    private String title;
 
     public String getId() {
         return id;
@@ -50,9 +52,6 @@ public class Product {
     public void setTitle(String title) {
         this.title = title;
     }
-
-    @SerializedName("title")
-    private String title;
 
     public BigDecimal getPrice() {
         return price;
@@ -97,7 +96,7 @@ public class Product {
     public String getPriceFormatted() {
         NumberFormat numberFormat = NumberFormat.getInstance();
         numberFormat.setMinimumFractionDigits(2);
-        BigDecimal priceDec = price.setScale(2, BigDecimal.ROUND_DOWN);
+        BigDecimal priceDec = price.setScale(2, RoundingMode.DOWN);
         return numberFormat.format(priceDec);
     }
 

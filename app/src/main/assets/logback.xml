@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <property name="EXT_FILES_DIR" value="${EXT_DIR:-/sdcard}/Android/data/${PACKAGE_NAME}/files"/>
     <appender name="MeliSampleLog"
               class="ch.qos.logback.classic.android.LogcatAppender">
         <encoder>
@@ -7,7 +8,7 @@
         </encoder>
     </appender>
     <appender name="File" class="ch.qos.logback.core.FileAppender">
-        <file>./log/test.log</file>
+        <file>${EXT_FILES_DIR}/log/meliSearchSample.log</file>
         <encoder>
             <pattern>%date %level %msg%n</pattern>
         </encoder>

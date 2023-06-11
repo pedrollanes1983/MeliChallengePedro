@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
+/**
+ * Clase que permite serializar
+ */
 public class ProductSearchResultList {
     @SerializedName("results")
     private ArrayList<Product> results;

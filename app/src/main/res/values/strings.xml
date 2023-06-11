@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">MeliSearchSampleApp</string>
     <string name="loading">Buscando productos...</string>
-    <string name="title_item_detail">Detalles del Producto</string>
+    <string name="title_item_detail">Detalles del producto</string>
     <string name="search_product">Buscar producto</string>
-    <string name="search_hint">Introduzca el texto para buscar</string>
+    <string name="search_hint">¿Qué estás buscando?</string>
     <string name="empty_search">No existen productos para el criterio de búsqueda actual o no se ha ejecutado una búsqueda.</string>
     <string name="empty_search_result">No se encontraron productos para el criterio indicado. Intente con otra palabra clave.</string>
     <string name="info_text">Información</string>

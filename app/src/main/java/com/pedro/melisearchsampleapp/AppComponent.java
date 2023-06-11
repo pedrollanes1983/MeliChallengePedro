@@ -8,6 +8,9 @@ import dagger.android.AndroidInjector;
 
 import javax.inject.Singleton;
 
+/**
+ * Dagger AppComponent
+ */
 @Singleton
 @Component(modules = { AndroidInjectionModule.class, AppModule.class, ApiModule.class})
 public interface AppComponent extends AndroidInjector<MeliSearchSampleApplication> {

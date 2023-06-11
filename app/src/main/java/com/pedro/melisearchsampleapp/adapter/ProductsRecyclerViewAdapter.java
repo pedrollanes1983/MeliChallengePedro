@@ -1,28 +1,22 @@
 package com.pedro.melisearchsampleapp.adapter;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
-import com.jakewharton.picasso.OkHttp3Downloader;
 import com.pedro.melisearchsampleapp.R;
 import com.pedro.melisearchsampleapp.databinding.ProductListContentBinding;
 import com.pedro.melisearchsampleapp.fragments.ProductDetailFragment;
-import com.pedro.melisearchsampleapp.fragments.ProductListFragment;
 import com.pedro.melisearchsampleapp.model.Product;
 import com.squareup.picasso.Picasso;
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,14 +24,13 @@ import java.util.List;
  */
 public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRecyclerViewAdapter.ViewHolder> {
     private static final Logger logger = LoggerFactory.getLogger(ProductsRecyclerViewAdapter.class);
-    private final List<Product> mValues;
+    private List<Product> mValues;
 
     private final Context mContext;
 
-    public ProductsRecyclerViewAdapter(List<Product> items,
-                                       Context context) {
-        mValues = items;
+    public ProductsRecyclerViewAdapter(Context context) {
         mContext = context;
+        mValues = new ArrayList<>();
     }
 
     @Override
@@ -47,6 +40,12 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
                 ProductListContentBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new ProductsRecyclerViewAdapter.ViewHolder(binding);
 
+    }
+
+    public void updateProductsList(List<Product> products) {
+        this.mValues.clear();
+        this.mValues.addAll(products);
+        notifyDataSetChanged();
     }
 
     @Override

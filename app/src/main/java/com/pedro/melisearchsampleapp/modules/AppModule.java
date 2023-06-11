@@ -4,21 +4,28 @@ import com.pedro.melisearchsampleapp.activity.SearchProductsActivity;
 import com.pedro.melisearchsampleapp.fragments.ProductDetailFragment;
 import com.pedro.melisearchsampleapp.fragments.ProductListFragment;
 import com.pedro.melisearchsampleapp.viewmodels.SearchResultsViewModel;
+import com.pedro.melisearchsampleapp.viewmodels.ViewModelProviderFactory;
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
 
+/**
+ * Dagger Module para configurar la inyección de las clases generales en la app
+ */
 @Module
 public interface AppModule {
     @ContributesAndroidInjector
-    abstract ProductListFragment contributeProductListFragmentInjector();
+    ProductListFragment contributeProductListFragmentInjector();
 
     @ContributesAndroidInjector
-    abstract ProductDetailFragment contributeProductDetailFragmentInjector();
+    ProductDetailFragment contributeProductDetailFragmentInjector();
 
     @ContributesAndroidInjector
-    abstract SearchProductsActivity contributeSearchProductsActivityInjector();
+    SearchProductsActivity contributeSearchProductsActivityInjector();
 
     @ContributesAndroidInjector
-    abstract SearchResultsViewModel contributeSearchResultsViewModelInjector();
+    SearchResultsViewModel contributeSearchResultsViewModelInjector();
+
+    @ContributesAndroidInjector
+    ViewModelProviderFactory contributeViewModelProviderFactoryInjector();
 
 }

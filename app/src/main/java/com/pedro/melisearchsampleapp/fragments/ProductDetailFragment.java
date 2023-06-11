@@ -1,22 +1,23 @@
 package com.pedro.melisearchsampleapp.fragments;
 
 import android.os.Bundle;
-
-import android.widget.ImageView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.lifecycle.ViewModelProvider;
 import com.pedro.melisearchsampleapp.MeliSearchSampleApplication;
 import com.pedro.melisearchsampleapp.R;
-import com.pedro.melisearchsampleapp.viewmodels.SearchResultsViewModel;
-import com.pedro.melisearchsampleapp.model.Product;
 import com.pedro.melisearchsampleapp.databinding.FragmentProductDetailBinding;
+import com.pedro.melisearchsampleapp.model.Product;
+import com.pedro.melisearchsampleapp.viewmodels.SearchResultsViewModel;
+import com.pedro.melisearchsampleapp.viewmodels.ViewModelProviderFactory;
 import com.squareup.picasso.Picasso;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
 
 /**
  * Fragmento utilizado para mostrar los detalles de un producto
@@ -41,13 +42,19 @@ public class ProductDetailFragment extends BaseFragment {
     private TextView mStopTime;
     private TextView mSoldCount;
 
-    SearchResultsViewModel mViewModel;
+    /**
+     * ViewModel asociado a la actividad principal y que comparten los fragmentos de la app.
+     * Contiene el listado de productos recuperado del servidor y la clave de búsqueda.
+     */
+    private SearchResultsViewModel mViewModel;
 
     private FragmentProductDetailBinding binding;
 
+    @Inject
+    ViewModelProviderFactory viewModelProviderFactory;
+
     /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
+     * Constructor vacío obligatorio, que permite instanciar el fragmento cuando cambia la orientación del dispositivo
      */
     public ProductDetailFragment() {
     }
@@ -58,11 +65,12 @@ public class ProductDetailFragment extends BaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         MeliSearchSampleApplication.getApplication().androidInjector().inject(this);
 
-        mViewModel = new ViewModelProvider(getActivity()).get(SearchResultsViewModel.class);
+        // Se obtiene el ViewModel de la Activity
+        mViewModel = viewModelProviderFactory.provideSearchResultsViewModel(getActivity());
 
         logger.info("Fragment view created");
 
@@ -79,14 +87,17 @@ public class ProductDetailFragment extends BaseFragment {
         mCondition = binding.condition;
 
         // Se obtiene el producto actual del listado, buscando por el ID que se pasa en los argumentos
-        product = mViewModel.getById(getArguments().get(ProductDetailFragment.ARG_ITEM_ID).toString());
+        if (getArguments() != null) {
+            product = mViewModel.getById(getArguments().get(ProductDetailFragment.ARG_ITEM_ID).toString());
+        }
 
         if (product == null) {
+            logger.error(getString(R.string.null_product_error));
             showErrorDialog(getString(R.string.null_product_error), getActivity());
             return rootView;
         }
 
-        // Actualizar los datos del producto
+        // Actualizar los datos del producto en pantalla
         updateContent();
         return rootView;
     }
