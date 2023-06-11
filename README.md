@@ -1,7 +1,11 @@
 # MeliChallengePedro
 Meli Challenge implementation by Pedro Llanes
 
-Notas:
+Notas y consideraciones:
+- En el listado de productos, a la hora de hacer el fetch, se debería implementar un paginado. 
+Para esto se podría haber realizado una implementación de Scroll Infinito en el RecyvlerView 
+que lista los productos. Por cuestiones de tiempo no pude implementarlo.
+
 - Se utiliza retrofit para las consultas a la API
 
 - Se impementa inyección con Dagger
