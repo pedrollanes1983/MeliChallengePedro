@@ -22,6 +22,11 @@ public class NavigationManager {
     public NavigationManager() {
     }
 
+    /**
+     * Permite configurar el macanismo de navegación de la app. Debe invocarse desde la actividad que contendrá
+     * los fragmentos
+     * @param activity Actividad principal de la app
+     */
     public void setupAppNavigation(AppCompatActivity activity) {
         NavHostFragment navHostFragment = (NavHostFragment) activity.getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment_product_detail);
@@ -33,6 +38,15 @@ public class NavigationManager {
         NavigationUI.setupActionBarWithNavController(activity, navController, appBarConfiguration);
     }
 
+    /**
+     * Permite navegar al fragmento indicado.
+     * Los posibles fragmentos están representados en el enum EnumNavigationFragment
+     * @param navigationFragment Enum que representa al fragmento al que se navega
+     * @param view Vista desde la que se está navegando
+     * @param arguments Argumentos para pasar la nuevo fragmento
+     *
+     * @see EnumNavigationFragment
+     */
     public void navigateToFragment(EnumNavigationFragment navigationFragment, View view, Bundle arguments) {
         switch (navigationFragment) {
             case PRODUCT_DETAILS:

@@ -7,13 +7,13 @@ import androidx.fragment.app.Fragment;
 import com.pedro.melisearchsampleapp.R;
 
 /**
- * Clase base de la que heradan todos los fragmentos en la app. Contiene métodos generales
+ * Clase base de la que heredan todos los fragmentos en la app. Contiene métodos generales
  * que pueden ser útiles en diferentes escenarios
  */
 public class BaseFragment extends Fragment {
     /**
      * Despliega un diálogo de alerta al usuario
-     * @param text Mesaje a mostrar en el diálogo
+     * @param text Mensaje a mostrar en el diálogo
      * @param context Contexto
      */
     protected void showAlertDialog(String text, Context context) {
@@ -21,7 +21,7 @@ public class BaseFragment extends Fragment {
     }
 
     /**
-     * Despliega un diálogo de informació al usuario
+     * Despliega un diálogo de información al usuario
      * @param text Mesaje a mostrar en el diálogo
      * @param context Contexto
      */
@@ -31,7 +31,7 @@ public class BaseFragment extends Fragment {
 
     /**
      * Despliega un diálogo de error al usuario
-     * @param text Mesaje a mostrar en el diálogo
+     * @param text Mensaje a mostrar en el diálogo
      * @param context Contexto
      */
     protected void showErrorDialog(String text, Context context) {

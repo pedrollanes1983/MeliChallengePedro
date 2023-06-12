@@ -24,7 +24,7 @@ import javax.inject.Inject;
 public class SearchProductsActivity extends AppCompatActivity {
 
     /**
-     * View model que contiene la lista de productos de la búsqueda. Además se encarga de gestionar las
+     * View model que contiene la lista de productos de la búsqueda. Además, se encarga de gestionar las
      * búsquedas.
      * Este ViewModel lo comparten los dos fragmentos de la app, aunque el owner es la actividad
      */

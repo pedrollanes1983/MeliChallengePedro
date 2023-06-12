@@ -6,6 +6,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 
+/**
+ * Clase que permite serializar un producto del json obtenido al consultar el end-point de búsqueda de productos
+ * Se está serializando los campos del producto solo parcialmente (para ahorrar tiempo, para la demo
+ * no hacen falta tantos campos)
+ */
 public class Product {
     @SerializedName("id")
     private String id;

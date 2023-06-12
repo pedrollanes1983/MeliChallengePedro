@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Adaptador del RecyclerView para mostrar el listado de productos encontrados en al búsqueda
+ * Adaptador del RecyclerView para mostrar el listado de productos encontrados en la búsqueda
  */
 public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRecyclerViewAdapter.ViewHolder> {
     private static final Logger logger = LoggerFactory.getLogger(ProductsRecyclerViewAdapter.class);
@@ -53,6 +53,7 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
     public void updateProductsList(List<Product> products) {
         this.mValues.clear();
         this.mValues.addAll(products);
+        // Se refresca el dataset completo, dado que la lista se cambia completamente
         notifyDataSetChanged();
     }
 

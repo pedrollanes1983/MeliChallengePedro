@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 /**
- * Clase que permite serializar
+ * Clase que permite serializar el json obtenido al consultar el end-point de búsqueda de productos
+ * Se está serializando el json solo parcialmente (para ahorrar tiempo, para la demo no hacen falta tantos campos)
  */
 public class ProductSearchResultList {
     @SerializedName("results")
