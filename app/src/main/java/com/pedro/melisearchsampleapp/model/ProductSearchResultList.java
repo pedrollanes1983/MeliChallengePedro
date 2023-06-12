@@ -3,6 +3,7 @@ package com.pedro.melisearchsampleapp.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * Clase que permite serializar
@@ -20,7 +21,8 @@ public class ProductSearchResultList {
     }
 
     public Product getById(String id) {
-        return results.stream().filter(searchResult -> searchResult.getId().equals(id)).findAny().get();
+        Optional<Product> product = results.stream().filter(searchResult -> searchResult.getId().equals(id)).findAny();
+        return product.orElse(null);
     }
 
     public boolean hasResults() {

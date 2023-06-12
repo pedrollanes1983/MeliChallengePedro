@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * Fragmento utilizado para mostrar los detalles de un producto
@@ -86,7 +87,6 @@ public class ProductDetailFragment extends BaseFragment {
         mStopTime = binding.stopTime;
         mCondition = binding.condition;
 
-        // Se obtiene el producto actual del listado, buscando por el ID que se pasa en los argumentos
         if (getArguments() != null) {
             product = mViewModel.getById(getArguments().get(ProductDetailFragment.ARG_ITEM_ID).toString());
         }
@@ -117,8 +117,8 @@ public class ProductDetailFragment extends BaseFragment {
             this.mTitleView.setText(product.getTitle());
             this.mPriceView.setText(product.getPriceFormatted());
             this.mCurrencyView.setText(String.format("(%s)", product.getCurrencyId()));
-            this.mAvailableCount.setText(product.getAvailableQuantity().toString());
-            this.mSoldCount.setText(product.getSoldQuantity().toString());
+            this.mAvailableCount.setText(String.format(Locale.getDefault(),"%d", product.getAvailableQuantity()));
+            this.mSoldCount.setText(String.format(Locale.getDefault(),"%d", product.getSoldQuantity()));
             this.mCondition.setText(product.getCondition());
             this.mStopTime.setText(product.getStopTime());
             Picasso.with(getActivity()).load(product.getThumbnail())

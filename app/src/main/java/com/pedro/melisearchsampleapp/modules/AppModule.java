@@ -1,5 +1,7 @@
 package com.pedro.melisearchsampleapp.modules;
 
+import com.pedro.melisearchsampleapp.adapter.ProductsRecyclerViewAdapter;
+import com.pedro.melisearchsampleapp.navigation.NavigationManager;
 import com.pedro.melisearchsampleapp.activity.SearchProductsActivity;
 import com.pedro.melisearchsampleapp.fragments.ProductDetailFragment;
 import com.pedro.melisearchsampleapp.fragments.ProductListFragment;
@@ -26,6 +28,12 @@ public interface AppModule {
     SearchResultsViewModel contributeSearchResultsViewModelInjector();
 
     @ContributesAndroidInjector
+    ProductsRecyclerViewAdapter contributeProductsRecyclerViewAdapterInjector();
+
+    @ContributesAndroidInjector
     ViewModelProviderFactory contributeViewModelProviderFactoryInjector();
+
+    @ContributesAndroidInjector
+    NavigationManager contributeNavigationManagerInjector();
 
 }

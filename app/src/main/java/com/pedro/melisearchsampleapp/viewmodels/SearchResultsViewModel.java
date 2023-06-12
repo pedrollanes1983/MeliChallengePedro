@@ -73,7 +73,7 @@ public class SearchResultsViewModel extends ViewModel {
         call.enqueue(new Callback<ProductSearchResultList>() {
             /**
              * El request terminó correctamente y se obtuvo una respuesta válida
-             * @param call
+             * @param call Instancia de la llamada
              * @param response Respuesta recibida
              */
             @Override
@@ -84,7 +84,7 @@ public class SearchResultsViewModel extends ViewModel {
 
             /**
              * El request falló con algún error
-             * @param call
+             * @param call Instancia de la llamada
              * @param t Error reportado
              */
             @Override

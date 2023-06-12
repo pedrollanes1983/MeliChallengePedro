@@ -6,16 +6,19 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
+import com.pedro.melisearchsampleapp.MeliSearchSampleApplication;
 import com.pedro.melisearchsampleapp.R;
 import com.pedro.melisearchsampleapp.databinding.ProductListContentBinding;
 import com.pedro.melisearchsampleapp.fragments.ProductDetailFragment;
 import com.pedro.melisearchsampleapp.model.Product;
+import com.pedro.melisearchsampleapp.navigation.EnumNavigationFragment;
+import com.pedro.melisearchsampleapp.navigation.NavigationManager;
 import com.squareup.picasso.Picasso;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +31,12 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
 
     private final Context mContext;
 
+    @Inject
+    NavigationManager navigationManager;
+
     public ProductsRecyclerViewAdapter(Context context) {
+        MeliSearchSampleApplication.getApplication().androidInjector().inject(this);
+
         mContext = context;
         mValues = new ArrayList<>();
     }
@@ -60,12 +68,12 @@ public class ProductsRecyclerViewAdapter extends RecyclerView.Adapter<ProductsRe
 
         holder.itemView.setTag(mValues.get(position));
         holder.itemView.setOnClickListener(itemView -> {
-            Product item =
+            Product product =
                     (Product) itemView.getTag();
             Bundle arguments = new Bundle();
-            // Se utiliza un argumento para conocer el id del producto que se va a mostrar en la pantalla de detalles
-            arguments.putString(ProductDetailFragment.ARG_ITEM_ID, item.getId());
-            Navigation.findNavController(itemView).navigate(R.id.show_item_detail, arguments);
+            // Se utiliza un argumento para enviar el id del producto que se va a mostrar en la pantalla de detalles
+            arguments.putString(ProductDetailFragment.ARG_ITEM_ID, product.getId());
+            navigationManager.navigateToFragment(EnumNavigationFragment.PRODUCT_DETAILS, itemView, arguments);
         });
     }
 

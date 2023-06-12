@@ -8,19 +8,18 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import com.pedro.melisearchsampleapp.MeliSearchSampleApplication;
 import com.pedro.melisearchsampleapp.R;
 import com.pedro.melisearchsampleapp.databinding.SearchProductsActivityBinding;
+import com.pedro.melisearchsampleapp.navigation.NavigationManager;
 import com.pedro.melisearchsampleapp.viewmodels.SearchResultsViewModel;
 import com.pedro.melisearchsampleapp.viewmodels.ViewModelProviderFactory;
 
 import javax.inject.Inject;
 
 /**
- * Actividad principal de la aplicación. En ella se muestran los fragmentos del buscador y los detalles de un producto
+ * Actividad principal de la aplicación. En ella se muestran los fragmentos del
+ * buscador y de los detalles de un producto.
  */
 public class SearchProductsActivity extends AppCompatActivity {
 
@@ -33,6 +32,9 @@ public class SearchProductsActivity extends AppCompatActivity {
 
     @Inject
     ViewModelProviderFactory viewModelProviderFactory;
+
+    @Inject
+    NavigationManager navigationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,14 +49,7 @@ public class SearchProductsActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // Configurar la navegación
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment_product_detail);
-        NavController navController = navHostFragment.getNavController();
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.
-                Builder(navController.getGraph())
-                .build();
-
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        navigationManager.setupAppNavigation(this);
 
         // Solicitar permisos al usuario
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {

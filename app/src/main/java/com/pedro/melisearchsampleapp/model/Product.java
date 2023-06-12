@@ -25,7 +25,6 @@ public class Product {
     private String stopTime;
     @SerializedName("sold_quantity")
     private Integer soldQuantity;
-
     @SerializedName("title")
     private String title;
 
