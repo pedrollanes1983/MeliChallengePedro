@@ -30,6 +30,7 @@ public class SearchResultsViewModel extends ViewModel {
     public SearchResultsViewModel() {
         MeliSearchSampleApplication.getApplication().androidInjector().inject(this);
         searchResultList = new MutableLiveData<>();
+        productToDisplayDetails = new MutableLiveData<>();
     }
 
     /**
@@ -41,20 +42,10 @@ public class SearchResultsViewModel extends ViewModel {
      */
     private final MutableLiveData<ProductSearchResultList> searchResultList;
 
+    private final MutableLiveData<Product> productToDisplayDetails;
+
     public MutableLiveData<ProductSearchResultList> getSearchResultList() {
         return searchResultList;
-    }
-
-    /**
-     * Permite obtener un producto del listado dado su ID
-     * @param id Identificador del producto
-     * @return El producto encontrado, o NULL si no se encuentra ninguno
-     */
-    public Product getById(String id) {
-        if (searchResultList != null)
-            return Objects.requireNonNull(searchResultList.getValue()).getById(id);
-        else
-            return null;
     }
 
     public String getSearchValue() {
@@ -94,4 +85,21 @@ public class SearchResultsViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Permite obtener un producto del listado dado su ID
+     * @param id Identificador del producto
+     * @return El producto encontrado, o NULL si no se encuentra ninguno
+     */
+    public void findProductToDisplayDetails(String id) {
+        if (searchResultList != null) {
+            productToDisplayDetails.setValue(Objects.requireNonNull(searchResultList.getValue()).getById(id));
+        }
+    }
+
+    /**
+     * Permite obtener el producto seleccionado para obtener los detalles
+     */
+    public MutableLiveData<Product> getProductToDisplayDetails() {
+        return productToDisplayDetails;
+    }
 }

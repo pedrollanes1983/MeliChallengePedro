@@ -6,10 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.lifecycle.Observer;
 import com.pedro.melisearchsampleapp.MeliSearchSampleApplication;
 import com.pedro.melisearchsampleapp.R;
 import com.pedro.melisearchsampleapp.databinding.FragmentProductDetailBinding;
 import com.pedro.melisearchsampleapp.model.Product;
+import com.pedro.melisearchsampleapp.model.ProductSearchResultList;
 import com.pedro.melisearchsampleapp.viewmodels.SearchResultsViewModel;
 import com.pedro.melisearchsampleapp.viewmodels.ViewModelProviderFactory;
 import com.squareup.picasso.Picasso;
@@ -30,10 +32,6 @@ public class ProductDetailFragment extends BaseFragment {
      * Identificador del producto del cual se mostrarán los detalles
      */
     public static final String ARG_ITEM_ID = "item_id";
-    /**
-     * Producto a mostrar detalles
-     */
-    private Product product;
     private ImageView mThumbView;
     private TextView mTitleView;
     private TextView mPriceView;
@@ -88,18 +86,23 @@ public class ProductDetailFragment extends BaseFragment {
         mCondition = binding.condition;
 
         if (getArguments() != null) {
-            product = mViewModel.getById(getArguments().get(ProductDetailFragment.ARG_ITEM_ID).toString());
+            // Indico al ViewModel que localize el producto para cargar los detalles
+            mViewModel.findProductToDisplayDetails(getArguments().get(ProductDetailFragment.ARG_ITEM_ID).toString());
         }
 
-        if (product == null) {
-            logger.error(getString(R.string.null_product_error));
-            showErrorDialog(getString(R.string.null_product_error), getActivity());
+        if (mViewModel.getProductToDisplayDetails() == null || mViewModel.getProductToDisplayDetails().getValue() == null) {
+            reportProductNotFoundError();
             return rootView;
         }
 
-        // Actualizar los datos del producto en pantalla
-        updateContent();
+        configureViewModelObserver();
+
         return rootView;
+    }
+
+    private void reportProductNotFoundError() {
+        logger.error(getString(R.string.null_product_error));
+        showErrorDialog(getString(R.string.null_product_error), getActivity());
     }
 
     @Override
@@ -112,8 +115,8 @@ public class ProductDetailFragment extends BaseFragment {
     /**
      * Permite actualizar el contenido de los detalles del producto actual
      */
-    private void updateContent() {
-        if (product != null) {
+    private void updateContent(Product product) {
+        if (mViewModel.getProductToDisplayDetails().getValue() != null) {
             this.mTitleView.setText(product.getTitle());
             this.mPriceView.setText(product.getPriceFormatted());
             this.mCurrencyView.setText(String.format("(%s)", product.getCurrencyId()));
@@ -127,5 +130,22 @@ public class ProductDetailFragment extends BaseFragment {
                     .into(mThumbView);
 
         }
+    }
+
+    private void configureViewModelObserver() {
+        // Se utiliza LiveData para mantener sincronizada la lista de resultados de búsqueda con el RecyclerView
+        // aunque como no se está usando paginado, se podría asignar directamente la lista al adapter cuando se
+        // realiza la consulta, ya que la lista no va a cambiar si no es con otra consulta
+        Observer<Product> productDetailsObserver = product -> {
+            if (product != null) {
+                // Se encontraron los detalles del producto a mostrar
+                updateContent(product);
+            } else {
+                // No se encontró el producto para mostrar los detalles, reporto error
+                reportProductNotFoundError();
+            }
+        };
+        // Configuro el Observer para ser notificado cuando cambia el listado de productos en el ViewModel
+        mViewModel.getProductToDisplayDetails().observe(getViewLifecycleOwner(), productDetailsObserver);
     }
 }

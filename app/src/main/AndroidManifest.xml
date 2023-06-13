@@ -22,7 +22,6 @@
         <activity
                 android:name="com.pedro.melisearchsampleapp.activity.SearchProductsActivity"
                 android:exported="true"
-                android:label="@string/app_name"
                 android:resizeableActivity="true"
                 >
             <intent-filter>
